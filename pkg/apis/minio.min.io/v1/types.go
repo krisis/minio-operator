@@ -109,6 +109,7 @@ type TenantSpec struct {
 	// KES is for setting up minio/kes as MinIO KMS
 	//+optional
 	KES *KESConfig `json:"kes,omitempty"`
+	Log *LogConfig `json:"log,omitempty"`
 	// ServiceAccountName is the name of the ServiceAccount to use to run pods of all MinIO
 	// Pods created as a part of this Tenant.
 	// +optional
@@ -213,6 +214,20 @@ type ConsoleConfiguration struct {
 // EqualImage returns true if config image and current input image are same
 func (c ConsoleConfiguration) EqualImage(currentImage string) bool {
 	return c.Image == currentImage
+}
+
+// LogConfig defines configuration parameters for Log feature
+type LogConfig struct {
+	// AuditConfig holds configuration for audit logs from MinIO
+	// +optional
+	Audit *AuditConfig `json:"audit,omitempty"`
+}
+
+// AuditConfig defines configuration parameters for Audit (type) logs
+type AuditConfig struct {
+	// RetentionPeriod defines the duration for which audit logs will be retained
+	// +optional
+	RetentionPeriod *int `json:"retentionPeriod,omitempty"`
 }
 
 // KESConfig defines the specifications for KES StatefulSet

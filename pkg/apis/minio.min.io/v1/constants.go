@@ -140,6 +140,58 @@ const ConsoleConfigMountPath = "/tmp/console"
 // DefaultConsoleReplicas specifies the default number of Console pods to be created if not specified
 const DefaultConsoleReplicas = 2
 
+// Log related constants
+
+// LogPgImage specifies the latest Postgres Docker hub image
+const LogPgImage = "library/postgres"
+
+// LogSearchAPIImage specifies the latest log-search-api server container image
+const LogSearchAPIImage = "minio/log-search-api"
+
+// LogDBInstanceLabel is applied to the Log (Postgres server) pods
+const LogDBInstanceLabel = "v1.min.io/log-pg"
+
+// LogSearchAPIInstanceLabel is applied to the Log Search API server pods
+const LogSearchAPIInstanceLabel = "v1.min.io/log-search-api"
+
+// LogPgPort specifies the default Log Service's port number.
+const LogPgPort = 5432
+
+// LogSearchAPIPort specifies the default Log Search API Service's port number.
+const LogSearchAPIPort = 8080
+
+// LogPgPortName specifies the default Log Service Postgres server's port name.
+const LogPgPortName = "http-log-pg"
+
+// LogSearchAPIPortName specifies the default Log Search API server's port name.
+const LogSearchAPIPortName = "http-log-search-api"
+
+// LogHLSvcNameSuffix specifies the suffix added to Tenant name to create a headless service for Log
+const LogHLSvcNameSuffix = "-log-hl-svc"
+
+// LogPgUserKey is the k8s secret/environment variable key name referring to postgres user
+const LogPgUserKey = "POSTGRES_USER"
+
+// LogPgPassKey is the k8s secret/environment variable key name referring to postgress password
+const LogPgPassKey = "POSTGRES_PASSWORD"
+
+// LogPgConnStr is the k8s env var key name referring to the postgres connection string; used in log-search-api deployment
+const LogPgConnStr = "LOG_PG_CONNSTR"
+
+// LogPgUser is the POSTGRES_USER used for Log feature
+const LogPgUser = "postgres"
+
+// LogAuditDB holds the name of the DB used to store MinIO audit events
+const LogAuditDB = "minio_logs"
+
+// LogAuditTokenKey is the k8s secret/environment variable key name referring to
+// the audit token used to authenticate audit logs from tenant's MinIO
+const LogAuditTokenKey = "LOG_AUDIT_TOKEN"
+
+// LogRetentionPeriodKey is the k8s secret/environment variable key name
+// referring to tenant's log retention period
+const LogRetentionPeriodKey = "LOG_RETENTION_PERIOD"
+
 // KES Related Constants
 
 // DefaultKESImage specifies the latest KES Docker hub image
