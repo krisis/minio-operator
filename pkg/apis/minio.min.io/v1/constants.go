@@ -176,7 +176,7 @@ const LogPgUserKey = "POSTGRES_USER"
 const LogPgPassKey = "POSTGRES_PASSWORD"
 
 // LogPgConnStr is the k8s env var key name referring to the postgres connection string; used in log-search-api deployment
-const LogPgConnStr = "LOG_PG_CONNSTR"
+const LogPgConnStr = "PG_CONN_STR"
 
 // LogPgUser is the POSTGRES_USER used for Log feature
 const LogPgUser = "postgres"
@@ -186,11 +186,11 @@ const LogAuditDB = "minio_logs"
 
 // LogAuditTokenKey is the k8s secret/environment variable key name referring to
 // the audit token used to authenticate audit logs from tenant's MinIO
-const LogAuditTokenKey = "LOG_AUDIT_TOKEN"
+const LogAuditTokenKey = "AUDIT_AUTH_TOKEN"
 
 // LogRetentionPeriodKey is the k8s secret/environment variable key name
 // referring to tenant's log retention period
-const LogRetentionPeriodKey = "LOG_RETENTION_PERIOD"
+const LogRetentionPeriodKey = "RETENTION_MONTHS"
 
 // KES Related Constants
 
