@@ -1637,13 +1637,29 @@ func (c *Controller) checkAndConfigureLogSearchAPI(ctx context.Context, tenant *
 
 func (c *Controller) checkAndCreatePrometheusConfigMap(ctx context.Context, tenant *miniov1.Tenant, accessKey, secretKey string) (*corev1.ConfigMap, error) {
 	configMap, err := c.kubeClientSet.CoreV1().ConfigMaps(tenant.Namespace).Get(ctx, tenant.PrometheusConfigMapName(), metav1.GetOptions{})
-	if err == nil || !k8serrors.IsNotFound(err) {
+	if err != nil && !k8serrors.IsNotFound(err) {
+		return configMap, err
+	} else if err == nil {
+		// check if configmap needs update.
+		updatedConfigMap := configmaps.UpdatePrometheusConfigMap(tenant, accessKey, secretKey, configMap)
+		if updatedConfigMap == nil {
+			return configMap, nil
+		}
+
+		klog.V(2).Infof("Updating Prometheus config-map for %s", tenant.Name)
+		configMap, err = c.kubeClientSet.CoreV1().ConfigMaps(tenant.Namespace).Update(ctx, updatedConfigMap, metav1.UpdateOptions{})
+		if err != nil {
+			return configMap, err
+		}
+
+		klog.V(2).Infof("Deleting Prometheus pod after config-map change for %s to cause prometheus to be re-deployed with updated config.", tenant.Name)
+		err = c.kubeClientSet.CoreV1().Pods(tenant.Namespace).Delete(ctx, tenant.PrometheusStatefulsetName(), metav1.DeleteOptions{})
 		return configMap, err
 	}
 
+	// otherwise create the config
 	klog.V(2).Infof("Creating a new Prometheus config-map for %s", tenant.Name)
-	configMap, err = c.kubeClientSet.CoreV1().ConfigMaps(tenant.Namespace).Create(ctx, configmaps.PrometheusConfigMap(tenant, accessKey, secretKey), metav1.CreateOptions{})
-	return configMap, err
+	return c.kubeClientSet.CoreV1().ConfigMaps(tenant.Namespace).Create(ctx, configmaps.PrometheusConfigMap(tenant, accessKey, secretKey), metav1.CreateOptions{})
 }
 
 func (c *Controller) checkAndCreatePrometheusHeadless(ctx context.Context, tenant *miniov1.Tenant) (*corev1.Service, error) {

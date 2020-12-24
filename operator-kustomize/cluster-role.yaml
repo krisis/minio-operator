@@ -27,6 +27,7 @@ rules:
       - list
       - delete
       - deletecollection
+      - update
   - apiGroups:
       - apps
     resources:

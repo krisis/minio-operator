@@ -87,8 +87,7 @@ func getMinioPodAddrs(t *miniov1.Tenant) []string {
 	return targets
 }
 
-// PrometheusConfigMap returns configuration for Prometheus.
-func PrometheusConfigMap(t *miniov1.Tenant, accessKey, secretKey string) *corev1.ConfigMap {
+func getPrometheusConfig(t *miniov1.Tenant, accessKey, secretKey string) string {
 	bearerToken := genBearerToken(accessKey, secretKey)
 	minioTargets := getMinioPodAddrs(t)
 	minioScheme := "http"
@@ -129,6 +128,12 @@ func PrometheusConfigMap(t *miniov1.Tenant, accessKey, secretKey string) *corev1
 # DO NOT EDIT.
 
 %s`, d)
+	return configFileContent
+}
+
+// PrometheusConfigMap returns configuration for Prometheus.
+func PrometheusConfigMap(t *miniov1.Tenant, accessKey, secretKey string) *corev1.ConfigMap {
+	configFileContent := getPrometheusConfig(t, accessKey, secretKey)
 
 	return &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
@@ -140,4 +145,28 @@ func PrometheusConfigMap(t *miniov1.Tenant, accessKey, secretKey string) *corev1
 			"prometheus.yml": configFileContent,
 		},
 	}
+}
+
+// UpdatePrometheusConfigMap checks if the prometheus config map needs update
+// and if so returns the updated map. Otherwise it returns nil.
+func UpdatePrometheusConfigMap(t *miniov1.Tenant, accessKey, secretKey string, existing *corev1.ConfigMap) *corev1.ConfigMap {
+	existingConfigFile := existing.Data["prometheus.yml"]
+
+	configFileContent := getPrometheusConfig(t, accessKey, secretKey)
+
+	// FIXME(aditya): do a better check by validating the prometheus bearer
+	// token for minio instead of generating a new one.
+	if existingConfigFile != configFileContent {
+		return &corev1.ConfigMap{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:            t.PrometheusConfigMapName(),
+				Namespace:       t.Namespace,
+				OwnerReferences: t.OwnerRef(),
+			},
+			Data: map[string]string{
+				"prometheus.yml": configFileContent,
+			},
+		}
+	}
+	return nil
 }

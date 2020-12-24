@@ -9,6 +9,7 @@ data:
   accesskey: bWluaW8=
   ## Secret Key for MinIO Tenant, base64 encoded (echo -n 'minio123' | base64)
   secretkey: bWluaW8xMjM=
+  ## bWluaW8xMjM0
 ---
 ## MinIO Tenant Definition
 apiVersion: minio.min.io/v1
